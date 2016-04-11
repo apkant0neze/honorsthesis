@@ -3,7 +3,7 @@ import json
 import time 
 import datetime
 
-keyAPI = "9d6e8537-4b85-4170-bbf2-15604b0bf129"
+keyAPI = ""
 requestsCounter = 0
 output = open("visionGame_output.csv","w")
 output.write("matchID, team, eventType, timestamp, killer, creator, wardType\n")
