@@ -1,0 +1,126 @@
+import requests
+import json
+import time 
+import datetime 
+import urllib.request
+
+keyAPI = "9d6e8537-4b85-4170-bbf2-15604b0bf129"
+requestsCounter = 0
+
+summonerName = input("Enter your summoner name: ")
+time.sleep(1)
+print("Your request for summoner name -----> " + str(summonerName) + " <----- is received.... \n\nCreating connection with Riot Games' Open API....")
+time.sleep(2)
+summonerProfile = requests.get("https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/" + str(summonerName) + "?api_key=" + str(keyAPI)).json()
+time.sleep(1)
+print("\nRetreiving summoner's profile information....")
+time.sleep(2)
+print(str(summonerProfile) + "\n")
+time.sleep(1)
+summonerID = summonerProfile["id"]
+print("Retreiving summoner's identification number....")
+print(str(summonerID) + "\n")
+time.sleep(2) 
+print("Retreiving summoner's recent normal matches information....")
+time.sleep(2)
+normalMatches = requests.get("https://na.api.riotgames.com/api/lol/NA/v1.3/game/by-summoner/" + str(summonerID) + "/recent?api_key=" + str(keyAPI)).json() 
+time.sleep(1)
+#print(normalMatches)
+print("Retreiving match identification numbers....")
+time.sleep(2)
+
+wins = 0
+losses = 0
+playerType = 0
+playerPosition = 0
+kills = 0
+deaths = 0
+assists = 0
+for i in range(len(normalMatches["games"])): 
+	print(normalMatches["games"][i]["gameId"])
+	time.sleep(1)
+	#determining player-type
+	if "playerRole" in normalMatches["games"][i]["stats"]:
+		if normalMatches["games"][i]["stats"]["playerRole"] == 1:
+			print("DUO")
+			playerType = 1
+		elif normalMatches["games"][i]["stats"]["playerRole"] == 2:
+			print("SUPPORT")
+			playerType = 2
+		elif normalMatches["games"][i]["stats"]["playerRole"] == 3:
+			print("CARRY")
+			playerType = 3
+		elif normalMatches["games"][i]["stats"]["playerRole"] == 4:
+			print("SOLO")
+			playerType = 4
+	else:
+		print("UNKNOWN")
+	#determining player-position
+	if "playerPosition" in normalMatches["games"][i]["stats"]:
+		if normalMatches["games"][i]["stats"]["playerPosition"] == 1:
+			print("TOP")
+			playerPosition = 1
+		elif normalMatches["games"][i]["stats"]["playerPosition"] == 2:
+			print("MIDDLE")
+			playerPosition = 2
+		elif normalMatches["games"][i]["stats"]["playerPosition"] == 3:
+			print("JUNGLE")
+			playerPosition = 3
+		elif normalMatches["games"][i]["stats"]["playerPosition"] == 4:
+			print("BOT")
+			playerPosition = 4
+	else:
+		print("UNKNOWN")
+	#determining if the player got a kill in that game, if so, append/add
+	if "championsKilled" in normalMatches["games"][i]["stats"]:
+		kills = kills + normalMatches["games"][i]["stats"]["championsKilled"]
+		print(kills)
+	else:
+		kills = kills + 0
+		print(kills)
+	#determining if the player died in that game, if so, append/add
+	if "numDeaths" in normalMatches["games"][i]["stats"]:
+		deaths = deaths + normalMatches["games"][i]["stats"]["numDeaths"]
+		print(deaths)
+	else:
+		deaths = deaths + 0
+		print(deaths)
+	#determining if the player got an assist in that game, if so, append/add
+	if "assists" in normalMatches["games"][i]["stats"]:
+		assists = assists + normalMatches["games"][i]["stats"]["assists"]
+		print(assists)
+	else:
+		assists = assists + 0
+		print(assists)
+	#determining ending match result
+	if normalMatches["games"][i]["stats"]["win"] is True:
+		print("win")
+		wins = wins + 1
+	else: 
+		print("lost")
+		losses = losses + 1
+print("Aggregating total kills....")
+time.sleep(1)
+print("Total kills over the most recent games: " + str(kills))
+time.sleep(1)
+print("Aggregating total deaths....")
+time.sleep(1)
+print("Total deaths over the most recent games; " + str(deaths))
+time.sleep(1)
+print("Aggregating total assists....")
+time.sleep(1)
+print("Total assists over the most recent games: " + str(assists))
+time.sleep(1)
+print("Calculating KDA....")
+time.sleep(1)
+print("KDA: " + str((kills+assists)/deaths))
+print("Aggregating total wins and losses....")
+time.sleep(1)
+print("Total wins: " + str(wins))
+print("Total losses: " + str(losses))
+print("Calculating win rate....")
+time.sleep(1)
+print(wins/(wins+losses))
+print("Converting to percentage....")
+time.sleep(1)
+print(str((wins/(wins+losses))*100) + "%")
